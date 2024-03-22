@@ -1,0 +1,15 @@
+.he{
+  text-align: center;
+  color: blue;
+}
+
+body{
+  background-color: antiquewhite;
+}
+.img{
+  text-align: center;
+  margin: 10px 20px 0 0 ;  
+}
+.im{
+  display: flex;
+}
