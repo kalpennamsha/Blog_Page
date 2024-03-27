@@ -1,16 +1,29 @@
 .he{
   text-align: center;
-  color: blue;
+  color: brown;
+  margin-bottom: 20px;
 }
 
 body{
-  background-color: antiquewhite;
+  background: linear-gradient(
+    90deg,
+    rgb(126, 109, 239) 0%,
+    rgb(72, 72, 220) 35%,
+    rgb(99, 218, 237) 100%)
 }
 .img{
   text-align: center;
-  margin: 10px 20px 0 0 ;  
+  margin: 20px 30px 0 0 ;  
 
 }
 .im{
   display: flex;
+  justify-content: center;
 }
+
+.te{
+  justify-content: center;
+  display: flex;
+  margin-bottom: 10px;
+}
+

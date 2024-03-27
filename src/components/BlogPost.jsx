@@ -3,6 +3,12 @@ import FormInput from "./FormInput";
 import UpdateButton from "./UpdateButton";
 import DeleteButton from "./DeleteButton";
 
+function isValidImageUrl(url) {
+  const imageUrlPattern = /\.(jpg|jpeg|png|gif|webp)$/i;
+  const base64Pattern = /^data:image\/(jpeg|png|gif);base64,/i;
+  return imageUrlPattern.test(url) || base64Pattern.test(url);
+}
+
 function BlogPost() {
   const [posts, setPosts] = useState(() => {
     const storedPosts = localStorage.getItem("posts");
@@ -40,12 +46,21 @@ function BlogPost() {
     return `${currentDate}${count.toString().padStart(4, "0")}`;
   };
 
+  const getNextId = () => {
+    const lastId = posts.length > 0 ? posts[posts.length - 1].id : "0000";
+    const numericPart = parseInt(lastId.slice(-4));
+    const nextNumericPart = numericPart + 1;
+    return `${lastId.slice(0, 8)}${nextNumericPart
+      .toString()
+      .padStart(4, "0")}`;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "author") {
       if (/[0-9~`!@#$%^&*()-_+={}[\]:;"'<>,.?/\\|]/.test(value)) {
-        alert("only characters are allowed");
+        alert("Only characters are allowed");
         const sanitizedValue = value.replace(
           /[0-9~`!@#$%^&*()-_+={}[\]:;"'<>,.?/\\|]/g,
           ""
@@ -60,6 +75,17 @@ function BlogPost() {
           [name]: value.substring(0, 10),
         });
       }
+    } else if (name === "imageUrl") {
+      if (!isValidImageUrl(value)) {
+        alert(
+          "Invalid image URL. Please provide a valid image URL ending with .jpg, .jpeg, or a valid Base64 encoded image."
+        );
+        return;
+      }
+      setFormData({
+        ...formData,
+        [name]: value,
+      });
     } else {
       setFormData({
         ...formData,
@@ -111,7 +137,7 @@ function BlogPost() {
     const postToDuplicate = posts.find((post) => post.id === postId);
     const newPost = {
       ...postToDuplicate,
-      id: generateNextId(),
+      id: getNextId(),
       date: new Date().toLocaleDateString(),
     };
     setPosts([...posts, newPost]);
@@ -136,38 +162,42 @@ function BlogPost() {
   return (
     <div>
       <div>
-        <input
-          type="text"
-          placeholder="Search by Author or Description"
-          value={searchQuery}
-          onChange={handleSearchInputChange}
-        />
-        <form onSubmit={handleSubmit}>
-          <FormInput
-            name="author"
-            label="Author"
-            value={formData.author}
-            onChange={handleChange}
-            required
+        <div className="te">
+          <input
+            type="text"
+            placeholder="Search by Author or Description"
+            value={searchQuery}
+            onChange={handleSearchInputChange}
           />
-          <FormInput
-            name="description"
-            label="Description"
-            value={formData.description}
-            onChange={handleChange}
-            required
-          />
-          <FormInput
-            name="imageUrl"
-            label="Image URL"
-            value={formData.imageUrl}
-            onChange={handleChange}
-            required
-          />
-          <button type="submit">
-            {isUpdating ? "Update Post" : "Add Post"}
-          </button>
-        </form>
+        </div>
+        <div className="te">
+          <form onSubmit={handleSubmit}>
+            <FormInput
+              name="author"
+              label="Author"
+              value={formData.author}
+              onChange={handleChange}
+              required
+            />
+            <FormInput
+              name="description"
+              label="Description"
+              value={formData.description}
+              onChange={handleChange}
+              required
+            />
+            <FormInput
+              name="imageUrl"
+              label="Image URL"
+              value={formData.imageUrl}
+              onChange={handleChange}
+              required
+            />
+            <button className="btn btn-info" type="submit">
+              {isUpdating ? "Update Post" : "Add Post"}
+            </button>
+          </form>
+        </div>
       </div>
       <div className="im">
         {postsToDisplay.map((post) => (
@@ -179,7 +209,12 @@ function BlogPost() {
             <p>{post.description}</p>
             <UpdateButton onClick={() => handleUpdate(post.id)} />
             <DeleteButton onClick={() => handleDelete(post.id)} />
-            <button onClick={() => handleDuplicate(post.id)}>Duplicate</button>
+            <button
+              className="btn btn-primary"
+              onClick={() => handleDuplicate(post.id)}
+            >
+              Duplicate
+            </button>
           </div>
         ))}
       </div>
